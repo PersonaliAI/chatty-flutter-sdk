@@ -79,6 +79,7 @@ class ChattyTheme {
   final bool showSenderTag;
   /// Paid-plan white-label flag; hides the "Powered by Chatty" footer when true.
   final bool hideBranding;
+  final bool voiceEnabled;
 
   const ChattyTheme({
     this.name,
@@ -94,6 +95,7 @@ class ChattyTheme {
     this.colorScheme,
     this.showSenderTag = false,
     this.hideBranding = false,
+    this.voiceEnabled = false,
   });
 
   factory ChattyTheme.fromJson(Map<String, dynamic> json) {
@@ -114,8 +116,30 @@ class ChattyTheme {
       colorScheme: ChattyColorScheme.fromJson(json['color_scheme'] as Map<String, dynamic>?),
       showSenderTag: json['show_sender_tag'] == true,
       hideBranding: json['hide_branding'] == true,
+      voiceEnabled: json['voice_enabled'] == true,
     );
   }
+}
+
+class ChattyVoiceToken {
+  final String serverUrl;
+  final String participantToken;
+  final String roomName;
+  final String participantName;
+
+  const ChattyVoiceToken({
+    required this.serverUrl,
+    required this.participantToken,
+    required this.roomName,
+    required this.participantName,
+  });
+
+  factory ChattyVoiceToken.fromJson(Map<String, dynamic> json) => ChattyVoiceToken(
+        serverUrl: json['serverUrl'] as String? ?? '',
+        participantToken: json['participantToken'] as String? ?? '',
+        roomName: json['roomName'] as String? ?? '',
+        participantName: json['participantName'] as String? ?? '',
+      );
 }
 
 class ChattyChatResponse {
@@ -283,6 +307,17 @@ class ChattyClient {
     final response = await http.Response.fromStream(streamed);
     final json = _decode(response);
     return json['text'] as String? ?? '';
+  }
+
+  /// Creates a short-lived LiveKit participant token for the official
+  /// `livekit_client` package. API keys and provider credentials stay server-side.
+  Future<ChattyVoiceToken> createVoiceToken(String sessionId, {String participantName = 'Visitor'}) async {
+    final json = await _post(Uri.parse('$baseUrl/api/widget/voice/token'), {
+      'bot_id': botId,
+      'session_id': sessionId,
+      'participant_name': participantName,
+    });
+    return ChattyVoiceToken.fromJson(json);
   }
 
   Future<ChattyPollResponse> poll(String sessionId, String after) async {

@@ -85,6 +85,7 @@ const String chattyBridgeShimJs = _bridgeShimJs;
 class ChattyEmbedScreen extends StatefulWidget {
   final String botId;
   final String baseUrl;
+  final bool voiceOnly;
   final VoidCallback? onReady;
   final VoidCallback? onMessage;
   final VoidCallback? onClose;
@@ -113,6 +114,7 @@ class ChattyEmbedScreen extends StatefulWidget {
     super.key,
     required this.botId,
     this.baseUrl = chattyDefaultEmbedBaseUrl,
+    this.voiceOnly = false,
     this.onReady,
     this.onMessage,
     this.onClose,
@@ -127,7 +129,7 @@ class ChattyEmbedScreen extends StatefulWidget {
 
 class _ChattyEmbedScreenState extends State<ChattyEmbedScreen> with WidgetsBindingObserver {
   late final WebViewController _controller;
-  String get _embedUrl => '${widget.baseUrl.replaceAll(RegExp(r"/$"), "")}/embed/${widget.botId}';
+  String get _embedUrl => '${widget.baseUrl.replaceAll(RegExp(r"/$"), "")}/embed/${widget.botId}${widget.voiceOnly ? "?voice=only" : ""}';
   late final String _embedHost = Uri.parse(_embedUrl).host;
 
   bool _pageReady = false;
@@ -366,4 +368,32 @@ class _OfflineOrErrorView extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Standalone LiveKit voice-agent surface using the official Chatty web UI.
+class ChattyVoiceScreen extends StatelessWidget {
+  final String botId;
+  final String baseUrl;
+  final VoidCallback? onReady;
+  final VoidCallback? onMessage;
+  final VoidCallback? onClose;
+
+  const ChattyVoiceScreen({
+    super.key,
+    required this.botId,
+    this.baseUrl = chattyDefaultEmbedBaseUrl,
+    this.onReady,
+    this.onMessage,
+    this.onClose,
+  });
+
+  @override
+  Widget build(BuildContext context) => ChattyEmbedScreen(
+        botId: botId,
+        baseUrl: baseUrl,
+        voiceOnly: true,
+        onReady: onReady,
+        onMessage: onMessage,
+        onClose: onClose,
+      );
 }

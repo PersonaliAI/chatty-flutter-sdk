@@ -221,3 +221,13 @@ Widget buildEquation() {
 ## License
 
 MIT License. Copyright (c) PersonaliAI.
+
+## LiveKit voice
+
+Call `ChattyClient(botId).createVoiceToken(sessionId)` and connect the result
+with the official `livekit_client` package. `ChattyEmbedScreen` already
+includes the complete widget voice UI and real-time transcript for hosts that
+prefer zero native LiveKit setup.
+
+For a standalone screen, use `ChattyVoiceScreen(botId: "…")`; it loads the
+same official LiveKit UI in voice-only mode.

@@ -24,7 +24,7 @@ export 'src/chatty_chat_screen.dart' show ChattyChatScreen;
 // Primary integration path — loads the actual web widget page in a WebView,
 // guaranteeing exact parity with it. See ChattyChatScreen above for the
 // native-components alternative (more native feel, manually kept in parity).
-export 'src/chatty_embed_screen.dart' show ChattyEmbedScreen, chattyDefaultEmbedBaseUrl, chattyBridgeShimJs;
+export 'src/chatty_embed_screen.dart' show ChattyEmbedScreen, ChattyVoiceScreen, chattyDefaultEmbedBaseUrl, chattyBridgeShimJs;
 export 'src/chatty_launcher.dart' show ChattyLauncher, ChattyPosition;
 export 'src/chatty_markdown.dart' show ChattyMarkdown, chattyExtractMath, ChattyMathSpan;
 export 'src/chatty_design_tokens.dart' show ChattyDesignTokens, chattyDesignTokens, chattyNormalizeWidgetStyle;
