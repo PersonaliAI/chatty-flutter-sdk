@@ -73,7 +73,6 @@ class ChattyTheme {
   final String? teaserMessage;
   final String? avatarIcon;
   final String? avatarUrl;
-  final bool voiceEnabled;
   final ChattyColorScheme? colorScheme;
   /// Shows a small "AI"/"Human agent" label above assistant/agent bubbles —
   /// mirrors web's showSenderTag in EmbedClient.tsx.
@@ -92,7 +91,6 @@ class ChattyTheme {
     this.teaserMessage,
     this.avatarIcon,
     this.avatarUrl,
-    this.voiceEnabled = false,
     this.colorScheme,
     this.showSenderTag = false,
     this.hideBranding = false,
@@ -113,7 +111,6 @@ class ChattyTheme {
       teaserMessage: json['teaser_message'] as String?,
       avatarIcon: json['avatar_icon'] as String?,
       avatarUrl: json['avatar_url'] as String?,
-      voiceEnabled: json['voice_enabled'] == true,
       colorScheme: ChattyColorScheme.fromJson(json['color_scheme'] as Map<String, dynamic>?),
       showSenderTag: json['show_sender_tag'] == true,
       hideBranding: json['hide_branding'] == true,
@@ -143,29 +140,6 @@ class ChattyChatResponse {
       aiPaused: json['ai_paused'] == true,
       fileUrl: json['file_url'] as String?,
       fileType: json['file_type'] as String?,
-    );
-  }
-}
-
-class ChattyVoiceToken {
-  final String token;
-  final String livekitUrl;
-  final String roomName;
-  final String sessionId;
-
-  const ChattyVoiceToken({
-    required this.token,
-    required this.livekitUrl,
-    required this.roomName,
-    required this.sessionId,
-  });
-
-  factory ChattyVoiceToken.fromJson(Map<String, dynamic> json) {
-    return ChattyVoiceToken(
-      token: json['token'] as String? ?? '',
-      livekitUrl: json['livekit_url'] as String? ?? '',
-      roomName: json['room_name'] as String? ?? '',
-      sessionId: json['session_id'] as String? ?? '',
     );
   }
 }
@@ -292,22 +266,6 @@ class ChattyClient {
     final streamed = await request.send().timeout(_timeout);
     final response = await http.Response.fromStream(streamed);
     return ChattyChatResponse.fromJson(_decode(response));
-  }
-
-  /// Mints a LiveKit room token + dispatches the voice agent for a call, same
-  /// endpoint the web widget uses. Only meaningful when `getTheme().voiceEnabled`
-  /// is true. This SDK doesn't bundle the LiveKit client itself — apps that
-  /// want voice calls add `livekit_client` themselves and render their own
-  /// call screen from `onVoiceCallPress`, matching chatty-android-sdk's
-  /// ChattyVoiceCallScreen pattern.
-  Future<ChattyVoiceToken> getVoiceToken(String sessionId, {String visitorTimezone = 'UTC'}) async {
-    final body = <String, dynamic>{
-      'bot_id': botId,
-      'session_id': sessionId,
-      'visitor_timezone': visitorTimezone,
-    };
-    final json = await _post(Uri.parse('$baseUrl/api/widget/voice/token'), body);
-    return ChattyVoiceToken.fromJson(json);
   }
 
   /// Server-side speech-to-text for the mic button. Accepts wav/mp3/ogg/aac/

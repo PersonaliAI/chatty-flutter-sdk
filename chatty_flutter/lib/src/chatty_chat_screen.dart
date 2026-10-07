@@ -14,7 +14,7 @@ import 'chatty_controller.dart';
 import 'chatty_design_tokens.dart';
 import 'chatty_markdown.dart';
 
-/// Full Chatty chat screen: header (with voice/notification/clear-chat
+/// Full Chatty chat screen: header (with notification/clear-chat
 /// actions), message list, conversation starters, typing indicator, and
 /// composer (emoji picker, attach menu, mic recording). Equivalent to the
 /// web widget's embed iframe content and to chatty-android-sdk's
@@ -26,12 +26,6 @@ class ChattyChatScreen extends StatefulWidget {
   final String? host;
   final String hostKey;
   final void Function(ChattyMessage message)? onMessage;
-
-  /// Called when the header's voice-call button is tapped (only shown when
-  /// the bot's dashboard has voice enabled). This SDK doesn't bundle a
-  /// voice-call implementation (that's a separate LiveKit integration) —
-  /// wire this up if your app has one.
-  final VoidCallback? onVoiceCallPress;
 
   /// Called when the header's notification-bell button is tapped (only shown
   /// once POST_NOTIFICATIONS/notification permission is already granted —
@@ -65,7 +59,6 @@ class ChattyChatScreen extends StatefulWidget {
     this.host,
     this.hostKey = 'app',
     this.onMessage,
-    this.onVoiceCallPress,
     this.onNotificationBellPress,
     this.onClose,
     this.enableVoiceNotes = true,
@@ -385,8 +378,6 @@ class _ChattyChatScreenState extends State<ChattyChatScreen> with WidgetsBinding
           ),
           Row(
             children: [
-              if (_controller.theme?.voiceEnabled == true)
-                _headerIconButton(Icons.call, t.headerText, widget.onVoiceCallPress),
               // Only rendered once notification permission is already granted
               // — the SDK never requests it itself.
               if (widget.enableNotificationBell && _notificationsGranted)
