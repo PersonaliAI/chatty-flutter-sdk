@@ -311,11 +311,16 @@ class ChattyClient {
 
   /// Creates a short-lived LiveKit participant token for the official
   /// `livekit_client` package. API keys and provider credentials stay server-side.
-  Future<ChattyVoiceToken> createVoiceToken(String sessionId, {String participantName = 'Visitor'}) async {
+  Future<ChattyVoiceToken> createVoiceToken(
+    String sessionId, {
+    String participantName = 'Visitor',
+    String visitorTimezone = 'UTC',
+  }) async {
     final json = await _post(Uri.parse('$baseUrl/api/widget/voice/token'), {
       'bot_id': botId,
       'session_id': sessionId,
       'participant_name': participantName,
+      'visitor_timezone': visitorTimezone,
     });
     return ChattyVoiceToken.fromJson(json);
   }
