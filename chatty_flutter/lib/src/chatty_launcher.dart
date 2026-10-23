@@ -93,7 +93,7 @@ class _ChattyLauncherState extends State<ChattyLauncher> {
       context: context,
       barrierDismissible: false,
       barrierColor: Colors.black54,
-      pageBuilder: (context, _, _) {
+      pageBuilder: (context, _, __) {
         final tokens = chattyDesignTokens[_designId] ?? chattyDesignTokens['minimal']!;
         return Scaffold(
           backgroundColor: tokens.containerBg,

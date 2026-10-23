@@ -288,7 +288,7 @@ class _ChattyChatScreenState extends State<ChattyChatScreen> with WidgetsBinding
                 controller: _scrollController,
                 padding: const EdgeInsets.all(16),
                 itemCount: _controller.messages.length + (_controller.sending ? 1 : 0),
-                separatorBuilder: (_, _) => const SizedBox(height: 16),
+                separatorBuilder: (_, __) => const SizedBox(height: 16),
                 itemBuilder: (context, index) {
                   if (index >= _controller.messages.length) {
                     return _TypingBubble(t: t, avatarIcon: _controller.theme?.avatarIcon, avatarUrl: _controller.theme?.avatarUrl);
