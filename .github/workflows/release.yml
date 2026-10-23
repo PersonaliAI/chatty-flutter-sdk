@@ -1,0 +1,52 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build & publish release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.24.x"
+          channel: "stable"
+          cache: true
+
+      - name: Get dependencies for SDK
+        working-directory: chatty_flutter
+        run: flutter pub get
+
+      - name: Analyze SDK
+        working-directory: chatty_flutter
+        run: flutter analyze
+
+      - name: Build example APK
+        working-directory: chatty_flutter_example
+        run: |
+          flutter pub get
+          flutter build apk --release
+
+      - name: Prepare APK
+        run: cp chatty_flutter_example/build/app/outputs/flutter-apk/app-release.apk chatty-flutter-example.apk
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: chatty-flutter-example.apk

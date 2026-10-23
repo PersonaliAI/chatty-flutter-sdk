@@ -1,3 +1,9 @@
+## 0.0.3
+
+* Wrap `ChattyEmbedScreen` in `SafeArea` when `topInset` is omitted to guarantee status bar / notch clearance.
+* Pass explicit `topInset=0` to embedded web view when handled by native `SafeArea` to prevent double top padding.
+* Add responsive width constraints (`ConstrainedBox` with screen width and `maxLines: 2` with `TextOverflow.ellipsis`) to conversation starter chips in `ChattyChatScreen`.
+
 ## 0.0.2
 
 * Fix mobile status bar overlap and vertical responsiveness in `ChattyEmbedScreen`.
