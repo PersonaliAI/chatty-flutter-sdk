@@ -109,12 +109,16 @@ class ChattyEmbedScreen extends StatefulWidget {
   /// Same contract as [onMicPermissionNeeded], for the attach menu's
   /// "Location" option (ACCESS_COARSE_LOCATION / ACCESS_FINE_LOCATION).
   final VoidCallback? onLocationPermissionNeeded;
+  final double? topInset;
+  final double? bottomInset;
 
   const ChattyEmbedScreen({
     super.key,
     required this.botId,
     this.baseUrl = chattyDefaultEmbedBaseUrl,
     this.voiceOnly = false,
+    this.topInset,
+    this.bottomInset,
     this.onReady,
     this.onMessage,
     this.onClose,
@@ -129,7 +133,17 @@ class ChattyEmbedScreen extends StatefulWidget {
 
 class _ChattyEmbedScreenState extends State<ChattyEmbedScreen> with WidgetsBindingObserver {
   late final WebViewController _controller;
-  String get _embedUrl => '${widget.baseUrl.replaceAll(RegExp(r"/$"), "")}/embed/${widget.botId}${widget.voiceOnly ? "?voice=only" : ""}';
+  String get _embedUrl {
+    final base = widget.baseUrl.replaceAll(RegExp(r"/$"), "");
+    final uri = Uri.parse('$base/embed/${widget.botId}');
+    final query = Map<String, String>.from(uri.queryParameters);
+    query['platform'] = 'flutter';
+    query['safeArea'] = 'true';
+    if (widget.voiceOnly) query['voice'] = 'only';
+    if (widget.topInset != null) query['topInset'] = widget.topInset!.toInt().toString();
+    if (widget.bottomInset != null) query['bottomInset'] = widget.bottomInset!.toInt().toString();
+    return uri.replace(queryParameters: query).toString();
+  }
   late final String _embedHost = Uri.parse(_embedUrl).host;
 
   bool _pageReady = false;
@@ -182,6 +196,24 @@ class _ChattyEmbedScreenState extends State<ChattyEmbedScreen> with WidgetsBindi
     if (state == AppLifecycleState.resumed) _checkNotifPermission();
   }
 
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    _deliverSafeArea();
+  }
+
+  void _deliverSafeArea() {
+    if (!_pageReady || !mounted) return;
+    final padding = MediaQuery.maybePaddingOf(context);
+    final top = widget.topInset ?? padding?.top ?? 0.0;
+    final bottom = widget.bottomInset ?? padding?.bottom ?? 0.0;
+    _deliverToPage({
+      'type': 'chatty-safe-area',
+      'top': top,
+      'bottom': bottom,
+    });
+  }
+
   void _initWebView() {
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -199,6 +231,7 @@ class _ChattyEmbedScreenState extends State<ChattyEmbedScreen> with WidgetsBindi
             case 'chatty:ready':
               if (mounted) setState(() => _pageReady = true);
               _deliverToPage({'type': 'chatty-notification-status', 'granted': _notifGranted});
+              _deliverSafeArea();
               widget.onReady?.call();
             case 'chatty:message':
               widget.onMessage?.call();
