@@ -38,6 +38,7 @@ jobs:
       - name: Build example APK
         working-directory: chatty_flutter_example
         run: |
+          cp lib/local_config.example.dart lib/local_config.dart
           flutter pub get
           flutter build apk --release
 
