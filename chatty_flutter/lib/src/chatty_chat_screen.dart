@@ -415,8 +415,17 @@ class _ChattyChatScreenState extends State<ChattyChatScreen> with WidgetsBinding
                 foregroundColor: t.userBubbleBg,
                 side: BorderSide(color: t.userBubbleBg.withValues(alpha: 0.4)),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               ),
-              child: Text(starter, style: const TextStyle(fontSize: 12)),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width - 64),
+                child: Text(
+                  starter,
+                  style: const TextStyle(fontSize: 12),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ),
         ],
       ),

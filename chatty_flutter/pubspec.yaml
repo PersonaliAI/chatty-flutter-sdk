@@ -1,6 +1,6 @@
 name: chatty_flutter
 description: "Official Flutter SDK for Chatty AI chatbots — chat widget, floating launcher, theming, markdown/LaTeX rendering."
-version: 0.0.2
+version: 0.0.3
 homepage: https://github.com/PersonaliAI/chatty-flutter-sdk
 
 environment:

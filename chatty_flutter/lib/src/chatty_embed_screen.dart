@@ -140,7 +140,7 @@ class _ChattyEmbedScreenState extends State<ChattyEmbedScreen> with WidgetsBindi
     query['platform'] = 'flutter';
     query['safeArea'] = 'true';
     if (widget.voiceOnly) query['voice'] = 'only';
-    if (widget.topInset != null) query['topInset'] = widget.topInset!.toInt().toString();
+    query['topInset'] = (widget.topInset ?? 0).toInt().toString();
     if (widget.bottomInset != null) query['bottomInset'] = widget.bottomInset!.toInt().toString();
     return uri.replace(queryParameters: query).toString();
   }
@@ -356,17 +356,21 @@ class _ChattyEmbedScreenState extends State<ChattyEmbedScreen> with WidgetsBindi
 
     return Container(
       color: t.containerBg,
-      child: Stack(
-        children: [
-          WebViewWidget(controller: _controller),
-          if (!_pageReady)
-            Positioned.fill(
-              child: Container(
-                color: t.containerBg,
-                child: Center(child: CircularProgressIndicator(color: t.userBubbleBg)),
+      child: SafeArea(
+        top: widget.topInset == null,
+        bottom: false,
+        child: Stack(
+          children: [
+            WebViewWidget(controller: _controller),
+            if (!_pageReady)
+              Positioned.fill(
+                child: Container(
+                  color: t.containerBg,
+                  child: Center(child: CircularProgressIndicator(color: t.userBubbleBg)),
+                ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }
